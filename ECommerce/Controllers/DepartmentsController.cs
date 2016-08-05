@@ -27,7 +27,9 @@ namespace ECommerce.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             Department department = db.Departments.Find(id);
+
             if (department == null)
             {
                 return HttpNotFound();
