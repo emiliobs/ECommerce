@@ -7,118 +7,119 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using ECommerce.Models;
-using ECommerce.Classes;
 
 namespace ECommerce.Controllers
 {
-    public class CitiesController : Controller
+    public class CompaniesController : Controller
     {
         private ECommerceContext db = new ECommerceContext();
 
-        // GET: Cities
+        // GET: Companies
         public ActionResult Index()
         {
-            var cities = db.Cities.Include(c => c.Department);
-            return View(cities.ToList());
+            var companies = db.Companies.Include(c => c.City).Include(c => c.Department);
+            return View(companies.ToList());
         }
 
-        // GET: Cities/Details/5
+        // GET: Companies/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            City city = db.Cities.Find(id);
-            if (city == null)
+            Company company = db.Companies.Find(id);
+            if (company == null)
             {
                 return HttpNotFound();
             }
-            return View(city);
+            return View(company);
         }
 
-        // GET: Cities/Create
+        // GET: Companies/Create
         public ActionResult Create()
         {
-
-
-            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name");
+            ViewBag.CityId = new SelectList(db.Cities, "CityId", "Name");
+            ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "Name");
             return View();
         }
 
-        // POST: Cities/Create
+        // POST: Companies/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CityId,Name,DepartmentId")] City city)
+        public ActionResult Create([Bind(Include = "CompanyId,Name,Phone,Address,Logo,DepartmentId,CityId")] Company company)
         {
             if (ModelState.IsValid)
             {
-                db.Cities.Add(city);
+                db.Companies.Add(company);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name", city.DepartmentId);
-            return View(city);
+            ViewBag.CityId = new SelectList(db.Cities, "CityId", "Name", company.CityId);
+            ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "Name", company.DepartmentId);
+            return View(company);
         }
 
-        // GET: Cities/Edit/5
+        // GET: Companies/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            City city = db.Cities.Find(id);
-            if (city == null)
+            Company company = db.Companies.Find(id);
+            if (company == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name", city.DepartmentId);
-            return View(city);
+            ViewBag.CityId = new SelectList(db.Cities, "CityId", "Name", company.CityId);
+            ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "Name", company.DepartmentId);
+            return View(company);
         }
 
-        // POST: Cities/Edit/5
+        // POST: Companies/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CityId,Name,DepartmentId")] City city)
+        public ActionResult Edit([Bind(Include = "CompanyId,Name,Phone,Address,Logo,DepartmentId,CityId")] Company company)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(city).State = EntityState.Modified;
+                db.Entry(company).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "Name", city.DepartmentId);
-            return View(city);
+            ViewBag.CityId = new SelectList(db.Cities, "CityId", "Name", company.CityId);
+            ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "Name", company.DepartmentId);
+            return View(company);
         }
 
-        // GET: Cities/Delete/5
+        // GET: Companies/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            City city = db.Cities.Find(id);
-            if (city == null)
+            Company company = db.Companies.Find(id);
+            if (company == null)
             {
                 return HttpNotFound();
             }
-            return View(city);
+            return View(company);
         }
 
-        // POST: Cities/Delete/5
+        // POST: Companies/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            City city = db.Cities.Find(id);
-            db.Cities.Remove(city);
+            Company company = db.Companies.Find(id);
+            db.Companies.Remove(company);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
