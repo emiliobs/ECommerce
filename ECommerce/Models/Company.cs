@@ -28,6 +28,7 @@ namespace ECommerce.Models
         [DataType(DataType.MultilineText)]
         public string Address { get; set; }
 
+        //La ruta:
         [DataType(DataType.ImageUrl)]
         public string Logo { get; set; }
 
@@ -37,6 +38,9 @@ namespace ECommerce.Models
         public int DepartmentId { get; set; }
 
         public int CityId { get; set; }
+
+        [NotMapped]//no lo tiene encuenta para enviarlo a la base de datos = no persistencia:
+        public HttpPostedFileBase LogoFile { get; set; }
 
         //realcio lado varios:
         public virtual Department Department { get; set; }
