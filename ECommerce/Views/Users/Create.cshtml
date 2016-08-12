@@ -1,25 +1,41 @@
-﻿@model ECommerce.Models.Company
+﻿@model ECommerce.Models.User
 
 @{
     ViewBag.Title = "Create";
 }
 
-<h2>Create Companies.</h2>
+<h2>Create</h2>
 
 
-@using (Html.BeginForm("Create", "Companies", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("Create", "Users", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
 
     <div class="form-horizontal">
-        <h4>Company</h4>
+        <h4>User</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
-            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.UserName, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.LastName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
             </div>
         </div>
 
@@ -40,16 +56,20 @@
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.LogoFile, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Photo, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @*@Html.EditorFor(model => model.Logo, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Logo, "", new { @class = "text-danger" })*@
                 <span class="btn btn-default btn-file">
-                    @Html.TextBoxFor(model => model.LogoFile, new { Type = "file" })
+                    @Html.TextBoxFor(model => model.PhotoFile, new { Type = "file" })
                 </span>
             </div>
         </div>
-
+        <div class="form-group">
+            @Html.LabelFor(model => model.CompanyId,  htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("CompanyId", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.CompanyId, "", new { @class = "text-danger" })
+            </div>
+        </div>
         <div class="form-group">
             @Html.LabelFor(model => model.DepartmentId,  htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -57,7 +77,6 @@
                 @Html.ValidationMessageFor(model => model.DepartmentId, "", new { @class = "text-danger" })
             </div>
         </div>
-
         <div class="form-group">
             @Html.LabelFor(model => model.CityId,  htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -69,19 +88,15 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Create" class="btn btn-success" />
-                @Html.ActionLink("Back to List", "Index", new { }, new { @class = "btn btn-default" })
+                @Html.ActionLink("Back to List", "Index", new { }, new {@class="btn btn-default"})
             </div>
         </div>
     </div>
 }
-
-
-
 @section Scripts {
-
     @Scripts.Render("~/bundles/jqueryval")
 
-    <script type="text/javascript">
+<script type="text/javascript">
         $(document).ready(function () {
             $("#DepartmentId").change(function () {
                 $("#CityId").empty();
@@ -105,6 +120,6 @@
                 return false;
             })
         });
-    </script>
+</script>
 
 }

@@ -11,77 +11,75 @@ using ECommerce.Classes;
 
 namespace ECommerce.Controllers
 {
-    public class CompaniesController : Controller
+    public class UsersController : Controller
     {
         private ECommerceContext db = new ECommerceContext();
 
-        // GET: Companies
+        // GET: Users
         public ActionResult Index()
         {
-            var companies = db.Companies.Include(c => c.City).Include(c => c.Department);
-            return View(companies.ToList());
+            var users = db.Users.Include(u => u.City).Include(u => u.Company).Include(u => u.Department);
+            return View(users.ToList());
         }
 
-        // GET: Companies/Details/5
+        // GET: Users/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Company company = db.Companies.Find(id);
-            if (company == null)
+            User user = db.Users.Find(id);
+            if (user == null)
             {
                 return HttpNotFound();
             }
-            return View(company);
+            return View(user);
         }
 
-        // GET: Companies/Create
+        // GET: Users/Create
         public ActionResult Create()
         {
             ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name");
+            ViewBag.CompanyId = new SelectList(CombosHelper.GetCompanies(), "CompanyId", "Name");
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name");
+
             return View();
         }
 
-        // POST: Companies/Create
+        // POST: Users/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Company company)
+        public ActionResult Create(User user)
         {
             if (ModelState.IsValid)
             {
-
-                db.Companies.Add(company);
-
+                db.Users.Add(user);
                 try
                 {
                     db.SaveChanges();
 
+                    UserHelper.CreateUserASP(user.UserName,"User");
 
-
-                    if (company.LogoFile != null)
+                    if (user.PhotoFile != null)
                     {
                         var picture = string.Empty;
-                        var folder = "~/Content/Logos";
+                        var folder = "~/Content/Users";
 
-                        var response =  FileHelper.UploadPhoto(company.LogoFile, folder, $"{company.CompanyId}.jpg");
+                        var response = FileHelper.UploadPhoto(user.PhotoFile, folder, $"{user.UserId}.jpg");
 
                         if (response)
                         {
-                            picture = $"{folder}/{company.CompanyId}.jpg";
+                            picture = $"{folder}/{user.UserId}.jpg";
 
-                            company.Logo = picture;
+                            user.Photo = picture;
 
                             //actualizo la db:
-                            db.Entry(company).State = EntityState.Modified;
+                            db.Entry(user).State = EntityState.Modified;
                             db.SaveChanges();
                         }
-
-
                     }
 
                     return RedirectToAction("Index");
@@ -100,127 +98,84 @@ namespace ECommerce.Controllers
                         ModelState.AddModelError(string.Empty, ex.Message);
                     }
                 }
-
-
-
             }
 
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", company.CityId);
-            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name", company.DepartmentId);
-            return View(company);
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name");
+            ViewBag.CompanyId = new SelectList(CombosHelper.GetCompanies(), "CompanyId", "Name");
+            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name");
+            return View(user);
         }
 
-        // GET: Companies/Edit/5
+        // GET: Users/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Company company = db.Companies.Find(id);
-            if (company == null)
+            User user = db.Users.Find(id);
+            if (user == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", company.CityId);
-            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name", company.DepartmentId);
-            return View(company);
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name");
+            ViewBag.CompanyId = new SelectList(CombosHelper.GetCompanies(), "CompanyId", "Name");
+            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name");
+            return View(user);
         }
 
-        // POST: Companies/Edit/5
+        // POST: Users/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(Company company)
+        public ActionResult Edit([Bind(Include = "UserId,UserName,FirstName,LastName,Phone,Address,Photo,DepartmentId,CompanyId,CityId")] User user)
         {
             if (ModelState.IsValid)
             {
-
-                if (company.LogoFile != null)
-                {
-                    var picture = string.Empty;
-                    var folder = "~/Content/Logos";
-
-                    var response = FileHelper.UploadPhoto(company.LogoFile, folder, $"{company.CompanyId}.jpg");
-
-                    if (response)
-                    {
-                        picture = $"{folder}/{company.CompanyId}.jpg";
-
-                        company.Logo = picture;
-
-                        //actualizo la db:
-                        //db.Entry(company).State = EntityState.Modified;
-                        //db.SaveChanges();
-                    }
-
-
-                }
-
-
-                db.Entry(company).State = EntityState.Modified;
+                db.Entry(user).State = EntityState.Modified;
 
                 try
                 {
-
                     db.SaveChanges();
-                    return RedirectToAction("Index");
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
 
-                    if (ex.InnerException != null && ex.InnerException.InnerException != null &&
-                        ex.InnerException.InnerException.Message.Contains("_Index"))
-                    {
-                        ModelState.AddModelError(string.Empty, "There are a record with the same Value.");
-                    }
-                    else
-                    {
-                        ModelState.AddModelError(string.Empty, ex.Message);
-                    }
+                    throw;
                 }
 
-
+                return RedirectToAction("Index");
             }
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", company.CityId);
-            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name", company.DepartmentId);
-            return View(company);
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name");
+            ViewBag.CompanyId = new SelectList(CombosHelper.GetCompanies(), "CompanyId", "Name");
+            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name");
+            return View(user);
         }
 
-        // GET: Companies/Delete/5
+        // GET: Users/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Company company = db.Companies.Find(id);
-            if (company == null)
+            User user = db.Users.Find(id);
+            if (user == null)
             {
                 return HttpNotFound();
             }
-            return View(company);
+            return View(user);
         }
 
-        // POST: Companies/Delete/5
+        // POST: Users/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Company company = db.Companies.Find(id);
-            db.Companies.Remove(company);
-
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
+            User user = db.Users.Find(id);
+            db.Users.Remove(user);
+            db.SaveChanges();
             return RedirectToAction("Index");
         }
 

@@ -35,8 +35,10 @@ namespace ECommerce.Models
 
         [Required(ErrorMessage = "The field {0} is Required.")]
         [Range(1, double.MaxValue, ErrorMessage = "You must Select a {0}")]
+        [Display(Name = "Department")]
         public int DepartmentId { get; set; }
 
+        [Display(Name = "City")]
         public int CityId { get; set; }
 
         [NotMapped]//no lo tiene encuenta para enviarlo a la base de datos = no persistencia:
@@ -45,5 +47,6 @@ namespace ECommerce.Models
         //realcio lado varios:
         public virtual Department Department { get; set; }
         public virtual City City { get; set; }
+        public virtual ICollection<User> Users { get; set; }
     }
 }
