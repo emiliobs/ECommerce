@@ -10,14 +10,26 @@ using ECommerce.Models;
 
 namespace ECommerce.Controllers
 {
+    [Authorize(Roles ="User")]
     public class CategoriesController : Controller
     {
         private ECommerceContext db = new ECommerceContext();
-
+       
+     
         // GET: Categories
         public ActionResult Index()
         {
-            var categories = db.Categories.Include(c => c.Company);
+            //busco al usuario logiado
+            var user = db.Users.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+            //si no esta lo tiro al home
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            // solo muestro las categoria  delas compañia a las que pertenece el usuario...
+            var categories = db.Categories.Where(c => c.CompanyId == user.CompanyId); ;
+            
             return View(categories.ToList());
         }
 
@@ -39,8 +51,23 @@ namespace ECommerce.Controllers
         // GET: Categories/Create
         public ActionResult Create()
         {
-            ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name");
-            return View();
+            //ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name");
+            var user = db.Users.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            //envio a la vista el campo name de la comny lleno, el resto estra vacio para llenarlos de forma manuen en la vista:
+            var category = new Category
+            {
+                CompanyId = user.CompanyId,
+                
+            };
+
+            
+
+            return View(category);
         }
 
         // POST: Categories/Create
@@ -48,7 +75,7 @@ namespace ECommerce.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CategoryId,Description,CompanyId")] Category category)
+        public ActionResult Create( Category category)
         {
             if (ModelState.IsValid)
             {
@@ -58,6 +85,7 @@ namespace ECommerce.Controllers
             }
 
             ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name", category.CompanyId);
+            
             return View(category);
         }
 
