@@ -113,14 +113,18 @@ namespace ECommerce.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             User user = db.Users.Find(id);
+
             if (user == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name");
-            ViewBag.CompanyId = new SelectList(CombosHelper.GetCompanies(), "CompanyId", "Name");
-            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name");
+
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", user.CityId);
+            ViewBag.CompanyId = new SelectList(CombosHelper.GetCompanies(), "CompanyId", "Name", user.CompanyId);
+            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name", user.DepartmentId);
+
             return View(user);
         }
 
@@ -133,11 +137,42 @@ namespace ECommerce.Controllers
         {
             if (ModelState.IsValid)
             {
+
+
+                if (user.PhotoFile != null)
+                {
+                    var picture = string.Empty;
+                    var folder = "~/Content/Users";
+
+                    var response = FileHelper.UploadPhoto(user.PhotoFile, folder, $"{user.UserId}.jpg");
+
+                    if (response)
+                    {
+                        picture = $"{folder}/{user.UserId}.jpg";
+
+                        user.Photo = picture;
+                 
+                    }
+                }
+
+                //Busco el userName viejo a actualizar:
+                var db2 = new ECommerceContext();
+                var currentUser = db2.Users.Find(user.UserId);
+                if (currentUser.UserName != user.UserName)
+                {
+                    UserHelper.UpdateUserName(currentUser.UserName, user.UserName);
+                }
+                //close de DB:
+                db2.Dispose();
+
                 db.Entry(user).State = EntityState.Modified;
 
                 try
                 {
+                    //actualizo la db:
                     db.SaveChanges();
+                       
+                    return RedirectToAction("Index");
                 }
                 catch (Exception)
                 {
@@ -145,11 +180,12 @@ namespace ECommerce.Controllers
                     throw;
                 }
 
-                return RedirectToAction("Index");
+               
             }
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name");
-            ViewBag.CompanyId = new SelectList(CombosHelper.GetCompanies(), "CompanyId", "Name");
-            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name");
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", user.CityId);
+            ViewBag.CompanyId = new SelectList(CombosHelper.GetCompanies(), "CompanyId", "Name", user.CompanyId);
+            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name", user.DepartmentId);
+
             return View(user);
         }
 
@@ -160,7 +196,9 @@ namespace ECommerce.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             User user = db.Users.Find(id);
+
             if (user == null)
             {
                 return HttpNotFound();
@@ -175,8 +213,35 @@ namespace ECommerce.Controllers
         {
             User user = db.Users.Find(id);
             db.Users.Remove(user);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+
+            try
+            {
+
+                //Borro el usuario:
+                UserHelper.DeleteUser(user.UserName);
+
+                db.SaveChanges();
+                            
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+
+                if (ex.InnerException != null && ex.InnerException.InnerException != null &&
+                    ex.InnerException.InnerException.Message.Contains("REFERENCE"))
+                {
+                    ModelState.AddModelError(string.Empty, "The Record can't be Delete because it has related  Records");
+
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+
+            }
+
+            return View(user);
         }
 
         public JsonResult GetCities(int departmentId)

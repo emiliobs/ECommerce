@@ -214,14 +214,25 @@ namespace ECommerce.Controllers
             try
             {
                 db.SaveChanges();
+                return RedirectToAction("Index");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                if (ex.InnerException != null && ex.InnerException.InnerException != null &&
+                    ex.InnerException.InnerException.Message.Contains("REFERENCE"))
+                {
+                    ModelState.AddModelError(string.Empty, "The Record can't be Delete because it has related  Records");
+
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+
             }
 
-            return RedirectToAction("Index");
+            return View(company);
         }
 
         public JsonResult GetCities(int departmentId)

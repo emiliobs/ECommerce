@@ -16,6 +16,47 @@ namespace ECommerce.Classes
 
         private static ECommerceContext db = new ECommerceContext();
 
+        //Eliminar correo
+        public static  bool DeleteUser(string userName)
+        {
+            var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));
+
+            //Busco el usuario a eliminar:
+            var userASP = userManager.FindByEmail(userName);
+
+            if (userASP == null)
+            {
+                return false;
+            }
+
+            //var response = userManager.Delete(userASP);
+
+            //return response.Succeeded;
+
+            return userManager.Delete(userASP).Succeeded;
+        }
+
+
+        //cambio de correo
+        public static bool  UpdateUserName(string currentUserName, string newUserName)
+        {
+            var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));
+
+            var userASP = userManager.FindByEmail(currentUserName);
+
+            if (userASP == null)
+            {
+                return false;
+            }
+
+            userASP.UserName = newUserName;
+            userASP.Email = newUserName;
+
+            var response = userManager.Update(userASP);
+
+            return response.Succeeded;
+        }
+
         public static void CheckRole(string roleName)
         {
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(userContext));

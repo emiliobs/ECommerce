@@ -139,8 +139,29 @@ namespace ECommerce.Controllers
         {
             City city = db.Cities.Find(id);
             db.Cities.Remove(city);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+
+            try
+            {
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+
+                if (ex.InnerException != null && ex.InnerException.InnerException != null &&
+                    ex.InnerException.InnerException.Message.Contains("REFERENCE"))
+                {
+                    ModelState.AddModelError(string.Empty, "The Record can't be Delete because it has related  Records");
+
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+
+            }
+
+            return View(city);
         }
 
         protected override void Dispose(bool disposing)
