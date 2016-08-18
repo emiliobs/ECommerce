@@ -1,13 +1,13 @@
-﻿@model IEnumerable<ECommerce.Models.Category>
+﻿@model IEnumerable<ECommerce.Models.Tax>
 
 @{
     ViewBag.Title = "Index";
 }
 
-<h2>Categories</h2>
+<h2>Taxes</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create",new { @class= "btn btn-success" })
+    @Html.ActionLink("Create New", "Create")
 </p>
 <table class="table">
     <tr>
@@ -16,6 +16,9 @@
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Rate)
         </th>
         <th></th>
     </tr>
@@ -29,9 +32,12 @@
             @Html.DisplayFor(modelItem => item.Description)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.CategoryId }, new {@class="btn btn-info" })
-            @Html.ActionLink("Details", "Details", new { id=item.CategoryId }, new { @class = "btn btn-primary" }) 
-            @Html.ActionLink("Delete", "Delete", new { id=item.CategoryId }, new { @class = "btn btn-danger" })
+            @Html.DisplayFor(modelItem => item.Rate)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.TaxId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.TaxId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.TaxId })
         </td>
     </tr>
 }

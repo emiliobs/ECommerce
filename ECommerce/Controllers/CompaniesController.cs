@@ -118,13 +118,16 @@ namespace ECommerce.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             Company company = db.Companies.Find(id);
+
             if (company == null)
             {
                 return HttpNotFound();
             }
             ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", company.CityId);
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name", company.DepartmentId);
+
             return View(company);
         }
 

@@ -10,13 +10,12 @@ using ECommerce.Models;
 
 namespace ECommerce.Controllers
 {
-    [Authorize(Roles ="User")]
-    public class CategoriesController : Controller
+    [Authorize(Roles = "User")]
+    public class TaxesController : Controller
     {
         private ECommerceContext db = new ECommerceContext();
-       
-     
-        // GET: Categories
+
+        // GET: Taxes
         public ActionResult Index()
         {
             //busco al usuario logiado
@@ -27,58 +26,58 @@ namespace ECommerce.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            // solo muestro las categoria  delas compañia a las que pertenece el usuario...
-            var categories = db.Categories.Where(c => c.CompanyId == user.CompanyId); ;
-            
-            return View(categories.ToList());
+            var taxes = db.Taxes.Where(t=>t.CompanyId == user.CompanyId);
+
+            return View(taxes.ToList());
         }
 
-        // GET: Categories/Details/5
+        // GET: Taxes/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Category category = db.Categories.Find(id);
-            if (category == null)
+            Tax tax = db.Taxes.Find(id);
+            if (tax == null)
             {
                 return HttpNotFound();
             }
-            return View(category);
+            return View(tax);
         }
 
-        // GET: Categories/Create
+        // GET: Taxes/Create
         public ActionResult Create()
         {
             //ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name");
+
+            //busco al usuario logiado
             var user = db.Users.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+            //si no esta lo tiro al home
             if (user == null)
             {
                 return RedirectToAction("Index", "Home");
             }
 
-            //envio a la vista el campo name de la comny lleno, el resto estra vacio para llenarlos de forma manuen en la vista:
-            var category = new Category
+            var tax = new Tax
             {
                 CompanyId = user.CompanyId,
-                
             };
 
-            
-            return View(category);
+            return View(tax);
         }
 
-        // POST: Categories/Create
+        // POST: Taxes/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Category category)
+        public ActionResult Create([Bind(Include = "TaxId,Description,Rate,CompanyId")] Tax tax)
         {
             if (ModelState.IsValid)
             {
-                db.Categories.Add(category);
+                db.Taxes.Add(tax);
+
                 try
                 {
                     db.SaveChanges();
@@ -88,44 +87,46 @@ namespace ECommerce.Controllers
 
                     throw;
                 }
+
+
                 return RedirectToAction("Index");
+
+
             }
 
-            //ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name", category.CompanyId);
-            
-            return View(category);
+            //ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name", tax.CompanyId);
+            return View(tax);
         }
 
-        // GET: Categories/Edit/5
+        // GET: Taxes/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
-            Category category = db.Categories.Find(id);
-
-            if (category == null)
+            Tax tax = db.Taxes.Find(id);
+            if (tax == null)
             {
                 return HttpNotFound();
             }
 
-            //ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name", category.CompanyId);
+            //ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name", tax.CompanyId);
 
-            return View(category);
+            return View(tax);
         }
 
-        // POST: Categories/Edit/5
+        // POST: Taxes/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit( Category category)
+        public ActionResult Edit([Bind(Include = "TaxId,Description,Rate,CompanyId")] Tax tax)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(category).State = EntityState.Modified;
+                db.Entry(tax).State = EntityState.Modified;
+
                 try
                 {
                     db.SaveChanges();
@@ -135,36 +136,38 @@ namespace ECommerce.Controllers
 
                     throw;
                 }
+
                 return RedirectToAction("Index");
+
             }
 
-            //ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name", category.CompanyId);
+            //ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name", tax.CompanyId);
 
-            return View(category);
+            return View(tax);
         }
 
-        // GET: Categories/Delete/5
+        // GET: Taxes/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Category category = db.Categories.Find(id);
-            if (category == null)
+            Tax tax = db.Taxes.Find(id);
+            if (tax == null)
             {
                 return HttpNotFound();
             }
-            return View(category);
+            return View(tax);
         }
 
-        // POST: Categories/Delete/5
+        // POST: Taxes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Category category = db.Categories.Find(id);
-            db.Categories.Remove(category);
+            Tax tax = db.Taxes.Find(id);
+            db.Taxes.Remove(tax);
 
             try
             {
