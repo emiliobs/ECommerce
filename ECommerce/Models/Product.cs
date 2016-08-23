@@ -17,7 +17,7 @@ namespace ECommerce.Models
         [Index("Product_CompanyId_BarCode_Index", 2, IsUnique = true)]//Indices compuestos:
         [Required(ErrorMessage = "The field {0} is Required.")]
         //[Range(1, double.MaxValue, ErrorMessage = "You must Select a {0}")]   
-        [StringLength(13, ErrorMessage = "The field {0} must be maximun {1} and minimun {2} characters length", MinimumLength = 1)]
+        [StringLength(100, ErrorMessage = "The field {0} must be maximun {1} and minimun {2} characters length", MinimumLength = 1)]
         [Display(Name = "Product")]
         public string Description  {  get;     set;    }
 
@@ -61,6 +61,7 @@ namespace ECommerce.Models
         public string Image { get; set; }
 
         [NotMapped]//no lo tiene encuenta para enviarlo a la base de datos = no persistencia:
+        [Display(Name ="Image")]
         public HttpPostedFileBase ImageFile { get; set; }
 
         //Relación:
