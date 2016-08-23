@@ -7,16 +7,24 @@ using System.Web;
 
 namespace ECommerce.Models
 {
-    public class Company
+    public class WareHouse
     {
         [Key]
+        public int WareHouseId { get; set; }
+
+        [Index("WareHouse_CompanyId_Company_Index", 1, IsUnique = true)]
+        [Required(ErrorMessage = "The field {0} is Required.")]
+        [Range(1, double.MaxValue, ErrorMessage = "You must Select a {0}")]
+        [Display(Name = "Company")]
         public int CompanyId { get; set; }
 
-        [Display(Name = "Company")]
+        
+        [Index("WareHouse_CompanyId_Company_Index", 2, IsUnique = true)]
+        [Display(Name ="WareHouse")]
         [Required(ErrorMessage = "The field {0} is Required.")]
-        [StringLength(50, ErrorMessage = "The field {0} must be maximum {1} and an minimum {2} characters length.", MinimumLength = 3)]
-        [Index("Company_Name_Index", IsUnique = true)]
+        [StringLength(50, ErrorMessage = "The field {0} must be maximum {1} and an minimum {2} characters length.", MinimumLength = 1)]
         public string Name { get; set; }
+                
 
         [Required(ErrorMessage = "The field {0} is Required.")]
         [StringLength(20, ErrorMessage = "The field {0} must be maximum {1} and an minimum {2} characters length.", MinimumLength = 3)]
@@ -28,31 +36,25 @@ namespace ECommerce.Models
         [DataType(DataType.MultilineText)]
         public string Address { get; set; }
 
-        //La ruta:
-        [DataType(DataType.ImageUrl)]
-        public string Logo { get; set; }
-
-        [NotMapped]//no lo tiene encuenta para enviarlo a la base de datos = no persistencia:
-        public HttpPostedFileBase LogoFile { get; set; }
-
+        
         [Required(ErrorMessage = "The field {0} is Required.")]
         [Range(1, double.MaxValue, ErrorMessage = "You must Select a {0}")]
         [Display(Name = "Department")]
         public int DepartmentId { get; set; }
 
+       
+
+        [Required(ErrorMessage = "The field {0} is Required.")]
+        [Range(1, double.MaxValue, ErrorMessage = "You must Select a {0}")]       
         [Display(Name = "City")]
         public int CityId { get; set; }
 
-       
 
         //realcio lado varios:
+
+        public virtual Company Company { get; set; }
+
         public virtual Department Department { get; set; }
         public virtual City City { get; set; }
-        public virtual ICollection<User> Users { get; set; }
-        public virtual ICollection<Category> Categories { get; set; }
-        public virtual ICollection<Tax> Taxes { get; set; }
-        public virtual ICollection<Product> Product { get; set; }
-        public virtual ICollection<WareHouse> WareHouse { get; set; }
-
     }
 }

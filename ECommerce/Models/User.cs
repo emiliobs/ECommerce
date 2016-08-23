@@ -45,7 +45,7 @@ namespace ECommerce.Models
 
         [Required(ErrorMessage = "The field {0} is Required.")]
         [Range(1, double.MaxValue, ErrorMessage = "You must Select a {0}")]
-        [Display(Name = "City")]
+        [Display(Name = "Department")]
         public int DepartmentId { get; set; }
 
         [Required(ErrorMessage = "The field {0} is Required.")]
@@ -56,7 +56,7 @@ namespace ECommerce.Models
 
         [Required(ErrorMessage = "The field {0} is Required.")]
         [Range(1, double.MaxValue, ErrorMessage = "You must Select a {0}")]
-        [Display(Name = "Department")]
+        [Display(Name = "City")]
         public int CityId { get; set; }
 
         [Display(Name = "Full Name")]
