@@ -30,8 +30,12 @@
             @Html.DisplayNameFor(model => model.Price)
         </th>
         <th>
+            @Html.DisplayNameFor(model => model.Stock)
+        </th>
+        <th>
             @Html.DisplayNameFor(model => model.Remarks)
         </th>
+        
         <th>
             @Html.DisplayNameFor(model => model.Image)
         </th>
@@ -58,6 +62,9 @@
         <td>
             @Html.DisplayFor(modelItem => item.Price)
         </td>
+        <td align="right">
+            @Html.DisplayFor(modelItem => item.Stock)
+        </td>        
         <td>
             @Html.DisplayFor(modelItem => item.Remarks)
         </td>

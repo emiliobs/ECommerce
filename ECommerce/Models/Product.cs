@@ -55,6 +55,15 @@ namespace ECommerce.Models
         [DataType(DataType.MultilineText)]
         public string Remarks  { get; set; }
 
+        [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = false)]
+        public double Stock
+        {
+            get
+            {
+                return Inventories.Sum(i => i.Stock);
+            }
+        }
+
 
         //La ruta:
         [DataType(DataType.ImageUrl)]

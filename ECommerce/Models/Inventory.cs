@@ -11,6 +11,7 @@ namespace ECommerce.Models
         [Key]
         public int InventoryId  { get; set; }
 
+        [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = false)]
         public double Stock { get; set; }
 
         [Required]
