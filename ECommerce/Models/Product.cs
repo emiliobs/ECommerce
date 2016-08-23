@@ -68,5 +68,6 @@ namespace ECommerce.Models
         public virtual Company Company { get; set; }
         public virtual Category Category { get; set; }
         public virtual Tax Tax { get; set; }
+        public virtual ICollection<Inventory> Inventories { get; set; }
     }
 }

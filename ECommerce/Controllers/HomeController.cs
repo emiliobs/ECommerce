@@ -24,14 +24,18 @@ namespace ECommerce.Controllers
         {
             ViewBag.Message = "Your application description page.";
 
-            return View();
+            var user = db.Users.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+
+            return View(user);
         }
 
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";
 
-            return View();
+            var user = db.Users.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+
+            return View(user);
         }
     }
 }
