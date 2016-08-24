@@ -68,5 +68,7 @@ namespace ECommerce.Models
         public virtual Department Department { get; set; }
         public virtual City City { get; set; }
         public virtual Company Company { get; set; }
+        public virtual ICollection<Order> Orders { get; set; }
+
     }
 }

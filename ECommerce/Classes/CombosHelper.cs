@@ -11,6 +11,7 @@ namespace ECommerce.Classes
     {
         private static ECommerceContext db = new ECommerceContext();
 
+        
         public static List<Department> GetDepartment()
         {
             var departments = db.Departments.ToList();
@@ -22,6 +23,18 @@ namespace ECommerce.Classes
             });
 
             return departments.OrderBy(d=>d.Name).ToList();
+        }
+
+        public static List<Product> GetProduct(int companyId)
+        {
+            var products = db.Products.Where(p=>p.CompanyId.Equals(companyId)).ToList();
+
+            products.Add(new Product {
+                    ProductId = 0,
+                    Description = "[Select a Product.....]"
+            });
+
+            return products.OrderBy(p=>p.Description).ToList();
         }
 
         public static List<City> GetCities()
@@ -58,11 +71,24 @@ namespace ECommerce.Classes
             categories.Add(new Category
             {
                 CategoryId = 0,
-                Description = "-- Select a Category --"
+                Description = "[Select a Category]"
             }
             );
 
             return categories;
+        }
+
+        public static List<Customer> GetCustomer(int companyId)
+        {
+            var customers = db.Customers.Where(c=>c.CompanyId.Equals(companyId)).OrderBy(c=>c.FirstName).ThenBy(c=>c.LastName).ToList();
+
+            customers.Add(new Customer
+            {
+                CustomerId = 0,
+                FirstName = "[Select a Customer.....]"
+            });
+
+            return customers;
         }
 
         public static List<Tax> GetTaxes(int companyId)
@@ -72,7 +98,7 @@ namespace ECommerce.Classes
             taxes.Add(new Tax
             {
                 TaxId = 0,
-                Description ="--Select a Taxes--"
+                Description ="[Select a Taxes]"
             });
 
             return taxes;
