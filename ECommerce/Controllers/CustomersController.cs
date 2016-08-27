@@ -75,10 +75,10 @@ namespace ECommerce.Controllers
 
                     return RedirectToAction("Index");
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
 
-                    throw;
+                    ModelState.AddModelError(string.Empty,  ex.Message);
                 }
 
                 

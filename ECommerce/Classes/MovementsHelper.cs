@@ -32,7 +32,9 @@ namespace ECommerce.Classes
                     db.Order.Add(order);
                     db.SaveChanges();
 
-                    foreach (var detail in view.Details)
+                    var details = db.OrderDetailTmps.Where(odt=>odt.UserName == UserName).ToList();
+
+                    foreach (var detail in details)
                     {
                         var orderDetail = new OrderDetail
                         {

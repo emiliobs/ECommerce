@@ -182,7 +182,10 @@ namespace ECommerce.Controllers
             }
 
             var user = db.Users.Where(u => u.UserName.Equals(User.Identity.Name)).FirstOrDefault();
+
             ViewBag.CustomerId = new SelectList(CombosHelper.GetCustomer(user.CompanyId), "CustomerId", "FullName", view.CustomerId);
+
+            view.Details = db.OrderDetailTmps.Where(odt => odt.UserName.Equals(User.Identity.Name)).ToList();
             //ViewBag.StateId = new SelectList(db.States, "StateId", "Description", order.StateId);
 
             return View(view);
