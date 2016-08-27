@@ -167,22 +167,25 @@ namespace ECommerce.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Order order)
+        public ActionResult Create(NewOrderView view)
         {
             if (ModelState.IsValid)
             {
-                db.Order.Add(order);
+                var response = MovementsHelper.NewOrder(view, User.Identity.Name);
 
-                db.SaveChanges();
-
-                return RedirectToAction("Index");
+                if (response.Succeeded)
+                {
+                    return RedirectToAction("Index");
+                }
+                ModelState.AddModelError(string.Empty, response.Message);
+               
             }
 
             var user = db.Users.Where(u => u.UserName.Equals(User.Identity.Name)).FirstOrDefault();
-            ViewBag.CustomerId = new SelectList(CombosHelper.GetCustomer(user.CompanyId), "CustomerId", "FullName", order.CustomerId);
+            ViewBag.CustomerId = new SelectList(CombosHelper.GetCustomer(user.CompanyId), "CustomerId", "FullName", view.CustomerId);
             //ViewBag.StateId = new SelectList(db.States, "StateId", "Description", order.StateId);
 
-            return View(order);
+            return View(view);
         }
 
         // GET: Orders/Edit/5

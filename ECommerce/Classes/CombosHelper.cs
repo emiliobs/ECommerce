@@ -80,13 +80,13 @@ namespace ECommerce.Classes
 
         public static List<Customer> GetCustomer(int companyId)
         {
-            var customers = db.Customers.Where(c=>c.CompanyId.Equals(companyId)).OrderBy(c=>c.FirstName).ThenBy(c=>c.LastName).ToList();
+            var customers = db.Customers.Where(c=>c.CompanyId == companyId).OrderBy(c=>c.FirstName).ThenBy(c=>c.LastName).ToList();
 
-            customers.Add(new Customer
-            {
-                CustomerId = 0,
-                FirstName = "[Select a Customer.....]"
-            });
+            //customers.Add(new Customer
+            //{
+            //    CustomerId = 0,
+            //    FirstName = "[Select a Customer.....]"
+            //});
 
             return customers;
         }
