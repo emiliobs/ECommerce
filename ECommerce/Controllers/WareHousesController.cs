@@ -54,7 +54,7 @@ namespace ECommerce.Controllers
                 CompanyId = user.CompanyId
             };
 
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name");
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(0), "CityId", "Name");
             //ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name");
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name");
 
@@ -74,22 +74,18 @@ namespace ECommerce.Controllers
             {
                 db.WareHouses.Add(wareHouse);
 
-                try
-                {
-                    db.SaveChanges();
 
+                var response = DBHelper.SaveChanges(db);
+
+                if (response.Succeeded)
+                {
                     return RedirectToAction("Index");
                 }
-                catch (Exception)
-                {
 
-                    throw;
-                }
-
-              
+                ModelState.AddModelError(string.Empty,response.Message);      
             }
 
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", wareHouse.CityId);
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(wareHouse.DepartmentId), "CityId", "Name", wareHouse.CityId);
             //ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name", wareHouse.CompanyId);
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name", wareHouse.DepartmentId);
 
@@ -111,11 +107,11 @@ namespace ECommerce.Controllers
                 return HttpNotFound();
             }
 
-           
 
-            ViewBag.CityId = new SelectList(db.Cities, "CityId", "Name", wareHouse.CityId);
+
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(wareHouse.DepartmentId), "CityId", "Name", wareHouse.CityId);
             //ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name", wareHouse.CompanyId);
-            ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "Name", wareHouse.DepartmentId);
+            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name", wareHouse.DepartmentId);
             return View(wareHouse);
         }
 
@@ -129,20 +125,19 @@ namespace ECommerce.Controllers
             if (ModelState.IsValid)
             {
                 db.Entry(wareHouse).State = EntityState.Modified;
-                try
-                {
-                    db.SaveChanges();
-                }
-                catch (Exception)
-                {
+                var response = DBHelper.SaveChanges(db);
 
-                    throw;
+                if (response.Succeeded)
+                {
+                    return RedirectToAction("Index");
                 }
-                return RedirectToAction("Index");
+
+                ModelState.AddModelError(string.Empty, response.Message);
             }
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", wareHouse.CityId);
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(wareHouse.DepartmentId), "CityId", "Name", wareHouse.CityId);
             //ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name", wareHouse.CompanyId);
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetCompanies(), "DepartmentId", "Name", wareHouse.DepartmentId);
+
             return View(wareHouse);
         }
 
@@ -168,16 +163,17 @@ namespace ECommerce.Controllers
         {
             WareHouse wareHouse = db.WareHouses.Find(id);
             db.WareHouses.Remove(wareHouse);
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (Exception)
-            {
 
-                throw;
+            var response = DBHelper.SaveChanges(db);
+
+            if (response.Succeeded)
+            {
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+
+            ModelState.AddModelError(string.Empty, response.Message);
+
+            return View(wareHouse);
         }
 
         protected override void Dispose(bool disposing)

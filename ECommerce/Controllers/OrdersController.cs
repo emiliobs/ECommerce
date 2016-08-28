@@ -100,12 +100,11 @@ namespace ECommerce.Controllers
                     throw;
                 }
             }
-
-            
+                       
 
             ViewBag.ProductId = new SelectList(CombosHelper.GetProduct(user.CompanyId), "ProductId", "Description",view.productId);
 
-            return View(view);
+            return PartialView(view);
         }
 
         [HttpGet]
@@ -115,7 +114,7 @@ namespace ECommerce.Controllers
 
             ViewBag.ProductId = new SelectList(CombosHelper.GetProduct(user.CompanyId),"ProductId","Description");
 
-            return View();
+            return PartialView();
         }
 
         // GET: Orders
@@ -125,7 +124,7 @@ namespace ECommerce.Controllers
 
             var order = db.Order.Where(o=>o.CompanyId.Equals(user.CompanyId)).Include(o => o.Customer).Include(o => o.State);
 
-            return View(order.ToList());
+            return View(order.ToList());//Lo pongo como parcia para que me funcione  la ventana modal:
         }
 
         // GET: Orders/Details/5

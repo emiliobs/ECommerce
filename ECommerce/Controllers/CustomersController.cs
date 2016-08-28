@@ -51,7 +51,7 @@ namespace ECommerce.Controllers
                 CompanyId = user.CompanyId
             };
 
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name");
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(0), "CityId", "Name");
             //ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name");
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name");
             return View(customer);
@@ -67,24 +67,21 @@ namespace ECommerce.Controllers
             if (ModelState.IsValid)
             {
                 db.Customers.Add(customer);
+                var response = DBHelper.SaveChanges(db);
+                
 
-                try
+                if (response.Succeeded)
                 {
-                    db.SaveChanges();
-                    UserHelper.CreateUserASP(customer.UserName,"Customer");
-
+                   
+                    UserHelper.CreateUserASP(customer.UserName, "Customer");
                     return RedirectToAction("Index");
                 }
-                catch (Exception ex)
-                {
 
-                    ModelState.AddModelError(string.Empty,  ex.Message);
-                }
-
+                ModelState.AddModelError(string.Empty, response.Message);          
                 
             }
 
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", customer.CityId);
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(customer.DepartmentId), "CityId", "Name", customer.CityId);
             //ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name", customer.CompanyId);
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name", customer.DepartmentId);
 
@@ -106,7 +103,7 @@ namespace ECommerce.Controllers
                 return HttpNotFound();
             }
 
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", customer.CityId);
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(customer.DepartmentId), "CityId", "Name", customer.CityId);
             //ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name", customer.CompanyId);
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name", customer.DepartmentId);
             return View(customer);
@@ -123,24 +120,20 @@ namespace ECommerce.Controllers
             {
                 db.Entry(customer).State = EntityState.Modified;
 
-                try
+                var response = DBHelper.SaveChanges(db);
+               
+
+                if (response.Succeeded)
                 {
-                    db.SaveChanges();
-
-                    //TO DO: validate when tue customer email change:
-
                     return RedirectToAction("Index");
                 }
-                catch (Exception)
-                {
 
-                    throw;
-                }
+                ModelState.AddModelError(string.Empty, response.Message);
 
-                
+
             }
 
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", customer.CityId);
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(customer.DepartmentId), "CityId", "Name", customer.CityId);
             //ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name", customer.CompanyId);
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name", customer.DepartmentId);
 
@@ -171,30 +164,22 @@ namespace ECommerce.Controllers
 
 
             db.Customers.Remove(customer);
+                      
+            var response = DBHelper.SaveChanges(db);
 
-            try
+            if (response.Succeeded)
             {
-                db.SaveChanges();
-
+               
                 UserHelper.DeleteUser(customer.UserName);
-
                 return RedirectToAction("Index");
             }
-            catch (Exception)
-            {
 
-                throw;
-            }
+            ModelState.AddModelError(string.Empty, response.Message);
 
-           
+            return View(customer);
+
         }
-        public JsonResult GetCities(int departmentId)
-        {
-            db.Configuration.ProxyCreationEnabled = false;
-            var cities = db.Cities.Where(c => c.DepartmentId == departmentId);
-
-            return Json(cities);
-        }
+       
 
         protected override void Dispose(bool disposing)
         {

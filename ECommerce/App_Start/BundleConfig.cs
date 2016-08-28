@@ -24,12 +24,17 @@ namespace ECommerce
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/bootstrap-datetimepicker.js",
                       "~/Scripts/respond.js",
-                      "~/Scripts/bootstrap-datetimepicker.js"));
+                      "~/Scripts/bootstrap-datetimepicker.js",
+                      "~/Scripts/fileupload.js",
+                      "~/Scripts/ecommerce.js"
+                      ));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                      "~/Content/bootstrap-datetimepicker.css",
-                      "~/Content/site.css"));
+                      "~/Content/site.css"
+                 
+                      ));
         }
     }
 }
