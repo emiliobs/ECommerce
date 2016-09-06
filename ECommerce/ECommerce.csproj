@@ -240,9 +240,8 @@
     <Content Include="Scripts\bootstrap-datetimepicker.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
-    <Content Include="Other\MVC.docx" />
-    <Content Include="Other\MVC2.docx" />
     <Content Include="Other\Modelos Orders.docx" />
+    <Content Include="Other\MVC.docx" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\ecommerce.js" />
     <Content Include="Scripts\fileupload.js" />

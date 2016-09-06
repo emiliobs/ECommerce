@@ -40,11 +40,11 @@ namespace ECommerce.Controllers
             {
                 db.SaveChanges();
 
-             
+
             }
             catch (Exception)
             {
-                
+
             }
             return RedirectToAction("Create");
 
@@ -55,13 +55,12 @@ namespace ECommerce.Controllers
 
         public ActionResult AddProduct(AddProductView view)
         {
-            var user = db.Users.Where(u => u.UserName.Equals(User.Identity.Name)).FirstOrDefault();
+            var user = db.Users.FirstOrDefault(u => u.UserName.Equals(User.Identity.Name));
 
             if (ModelState.IsValid)
             {
 
-                var orderDetailTmp = db.OrderDetailTmps
-                                       .Where(odt=>odt.UserName == User.Identity.Name && odt.ProductId == view.productId).FirstOrDefault();
+                var orderDetailTmp = db.OrderDetailTmps.FirstOrDefault(odt => odt.UserName == User.Identity.Name && odt.ProductId == view.productId);
 
                 if (orderDetailTmp == null)
                 {
@@ -84,9 +83,9 @@ namespace ECommerce.Controllers
                     orderDetailTmp.Quantity += view.Quantity;
                     db.Entry(orderDetailTmp).State= EntityState.Modified;
                 }
-                
 
-                
+
+
 
                 try
                 {
@@ -100,9 +99,9 @@ namespace ECommerce.Controllers
                     throw;
                 }
             }
-                       
 
-            ViewBag.ProductId = new SelectList(CombosHelper.GetProduct(user.CompanyId), "ProductId", "Description",view.productId);
+
+            ViewBag.ProductId = new SelectList(CombosHelper.GetProduct(user.CompanyId, true), "ProductId", "Description",view.productId);
 
             return PartialView(view);
         }
@@ -162,7 +161,7 @@ namespace ECommerce.Controllers
         }
 
         // POST: Orders/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -177,7 +176,7 @@ namespace ECommerce.Controllers
                     return RedirectToAction("Index");
                 }
                 ModelState.AddModelError(string.Empty, response.Message);
-               
+
             }
 
             var user = db.Users.Where(u => u.UserName.Equals(User.Identity.Name)).FirstOrDefault();
@@ -208,7 +207,7 @@ namespace ECommerce.Controllers
         }
 
         // POST: Orders/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]

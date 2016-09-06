@@ -11,7 +11,7 @@ namespace ECommerce.Classes
     {
         private static ECommerceContext db = new ECommerceContext();
 
-        
+
         public static List<Department> GetDepartment()
         {
             var departments = db.Departments.ToList();
@@ -23,6 +23,15 @@ namespace ECommerce.Classes
             });
 
             return departments.OrderBy(d=>d.Name).ToList();
+        }
+
+        public static List<Product> GetProduct(int companyId, bool sw)
+        {
+            var products = db.Products.Where(p => p.CompanyId == companyId).ToList();
+
+            return products.OrderBy(p=>p.Description).ToList();
+
+
         }
 
         public static List<Product> GetProduct(int companyId)
@@ -110,6 +119,6 @@ namespace ECommerce.Classes
             db.Dispose();
         }
 
-      
+
     }
 }
