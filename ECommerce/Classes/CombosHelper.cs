@@ -89,7 +89,21 @@ namespace ECommerce.Classes
 
         public static List<Customer> GetCustomer(int companyId)
         {
-            var customers = db.Customers.Where(c=>c.CompanyId == companyId).OrderBy(c=>c.FirstName).ThenBy(c=>c.LastName).ToList();
+
+            var query = (from cu in db.Customers
+                         join cc in db.CompanyCustomers on cu.CustomerId equals cc.CustomerId
+                         join co in db.Companies on cc.CompanyId equals co.CompanyId
+                         where co.CompanyId == companyId
+                         select new {cu}).ToList();
+
+
+
+            var customers = new List<Customer>();
+
+            foreach (var item in query)
+            {
+                customers.Add(item.cu);
+            }
 
             //customers.Add(new Customer
             //{
@@ -97,7 +111,7 @@ namespace ECommerce.Classes
             //    FirstName = "[Select a Customer.....]"
             //});
 
-            return customers;
+            return customers.OrderBy(c=>c.FirstName).ThenBy(c=>c.LastName).ToList();
         }
 
         public static List<Tax> GetTaxes(int companyId)

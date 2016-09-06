@@ -43,7 +43,7 @@ namespace ECommerce.Models
         [Display(Name = "City")]
         public int CityId { get; set; }
 
-       
+
 
         //realcio lado varios:
         public virtual Department Department { get; set; }
@@ -53,7 +53,7 @@ namespace ECommerce.Models
         public virtual ICollection<Tax> Taxes { get; set; }
         public virtual ICollection<Product> Product { get; set; }
         public virtual ICollection<WareHouse> WareHouse { get; set; }
-        public virtual ICollection<Customer> Customers { get; set; }
+        public virtual ICollection<CompanyCustomer> CompanyCustomers { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
 
     }

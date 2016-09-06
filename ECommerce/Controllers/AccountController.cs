@@ -18,6 +18,9 @@ namespace ECommerce.Controllers
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
 
+        private static ECommerceContext db = new ECommerceContext();
+
+
         public AccountController()
         {
         }
@@ -28,15 +31,32 @@ namespace ECommerce.Controllers
             SignInManager = signInManager;
         }
 
+
+        //metodo para ve el logo en la barra de navegación:
+        public void Logo(LoginViewModel model)
+        {
+            var user = db.Users.FirstOrDefault(u=>u.UserName == model.Email);
+
+            if (user != null)
+            {
+                var company = db.Companies.Find(user.CompanyId);
+
+                if (company != null )
+                {
+                    Session["Logo"] = company.Logo;
+                }
+            }
+        }
+
         public ApplicationSignInManager SignInManager
         {
             get
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set 
-            { 
-                _signInManager = value; 
+            private set
+            {
+                _signInManager = value;
             }
         }
 
@@ -79,6 +99,7 @@ namespace ECommerce.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
+                    Logo(model);
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
@@ -116,9 +137,9 @@ namespace ECommerce.Controllers
                 return View(model);
             }
 
-            // The following code protects for brute force attacks against the two factor codes. 
-            // If a user enters incorrect codes for a specified amount of time then the user account 
-            // will be locked out for a specified amount of time. 
+            // The following code protects for brute force attacks against the two factor codes.
+            // If a user enters incorrect codes for a specified amount of time then the user account
+            // will be locked out for a specified amount of time.
             // You can configure the account lockout settings in IdentityConfig
             var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent:  model.RememberMe, rememberBrowser: model.RememberBrowser);
             switch (result)
@@ -156,7 +177,7 @@ namespace ECommerce.Controllers
                 if (result.Succeeded)
                 {
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
+
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
@@ -212,7 +233,7 @@ namespace ECommerce.Controllers
                 // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                 // Send an email with this link
                 // string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-                // var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);		
+                // var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                 // await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
                 // return RedirectToAction("ForgotPasswordConfirmation", "Account");
             }
@@ -392,6 +413,7 @@ namespace ECommerce.Controllers
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            Session["Logo"] = null;
             return RedirectToAction("Index", "Home");
         }
 
@@ -419,6 +441,8 @@ namespace ECommerce.Controllers
                     _signInManager = null;
                 }
             }
+
+            //db.Dispose();
 
             base.Dispose(disposing);
         }

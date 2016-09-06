@@ -19,7 +19,22 @@ namespace ECommerce.Controllers
         public ActionResult Index()
         {
             var user = db.Users.Where(u=>u.UserName.Equals(User.Identity.Name)).FirstOrDefault();
-            var customers = db.Customers.Where(c=>c.CompanyId.Equals(user.CompanyId)).Include(c => c.City).Include(c => c.Department);
+
+            var query = (from cu in db.Customers
+                         join cc in db.CompanyCustomers on cu.CustomerId equals cc.CustomerId
+                         join co in db.Companies on cc.CompanyId equals co.CompanyId
+                         where co.CompanyId == user.CompanyId
+                         select new { cu }).ToList();
+
+
+
+            var customers = new List<Customer>();
+
+            foreach (var item in query)
+            {
+                customers.Add(item.cu);
+            }
+
             return View(customers.ToList());
         }
 
@@ -44,21 +59,21 @@ namespace ECommerce.Controllers
         // GET: Customers/Create
         public ActionResult Create()
         {
-            var user = db.Users.Where(u => u.UserName.Equals(User.Identity.Name)).FirstOrDefault();
+            //var user = db.Users.Where(u => u.UserName.Equals(User.Identity.Name)).FirstOrDefault();
 
-            var customer = new Customer
-            {
-                CompanyId = user.CompanyId
-            };
+            //var customer = new Customer
+            //{
+            //    CompanyId = user.CompanyId
+            //};
 
             ViewBag.CityId = new SelectList(CombosHelper.GetCities(0), "CityId", "Name");
             //ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name");
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name");
-            return View(customer);
+            return View();
         }
 
         // POST: Customers/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -66,24 +81,60 @@ namespace ECommerce.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Customers.Add(customer);
-                var response = DBHelper.SaveChanges(db);
-                
-
-                if (response.Succeeded)
+                using (var transaction = db.Database.BeginTransaction())
                 {
-                   
-                    UserHelper.CreateUserASP(customer.UserName, "Customer");
-                    return RedirectToAction("Index");
+                    try
+                    {
+                        db.Customers.Add(customer);
+                        var response = DBHelper.SaveChanges(db);
+
+
+                        if (!response.Succeeded)
+                        {
+                            ModelState.AddModelError(string.Empty, response.Message);
+                            transaction.Rollback();
+                            ViewBag.CityId = new SelectList(CombosHelper.GetCities(customer.DepartmentId), "CityId", "Name", customer.CityId);
+
+                            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name", customer.DepartmentId);
+
+                            return View(customer);
+                        }
+
+                        UserHelper.CreateUserASP(customer.UserName, "Customer");
+
+                        var user = db.Users.FirstOrDefault(u=>u.UserName == User.Identity.Name);
+
+                        var companyCustomer = new CompanyCustomer
+                        {
+
+                            CompanyId = user.CompanyId,
+                            CustomerId = customer.CustomerId
+                        };
+
+
+                        db.CompanyCustomers.Add(companyCustomer);
+                        db.SaveChanges();
+
+                        transaction.Commit();
+
+                        return RedirectToAction("Index");
+
+
+                    }
+                    catch (Exception ex)
+                    {
+
+                        transaction.Rollback();
+                        ModelState.AddModelError(string.Empty, ex.Message);
+                    }
                 }
 
-                ModelState.AddModelError(string.Empty, response.Message);          
-                
             }
 
             ViewBag.CityId = new SelectList(CombosHelper.GetCities(customer.DepartmentId), "CityId", "Name", customer.CityId);
-            //ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name", customer.CompanyId);
+
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartment(), "DepartmentId", "Name", customer.DepartmentId);
+
 
             return View(customer);
         }
@@ -110,7 +161,7 @@ namespace ECommerce.Controllers
         }
 
         // POST: Customers/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -121,7 +172,7 @@ namespace ECommerce.Controllers
                 db.Entry(customer).State = EntityState.Modified;
 
                 var response = DBHelper.SaveChanges(db);
-               
+
 
                 if (response.Succeeded)
                 {
@@ -160,26 +211,41 @@ namespace ECommerce.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
+
+            var user = db.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
+
             Customer customer = db.Customers.Find(id);
 
+            var companyCustomer = db.CompanyCustomers.FirstOrDefault(cc=>cc.CompanyId == user.CompanyId
+                                                                     && cc.CustomerId == customer.CustomerId);
 
-            db.Customers.Remove(customer);
-                      
-            var response = DBHelper.SaveChanges(db);
-
-            if (response.Succeeded)
+            using (var trantaction = db.Database.BeginTransaction())
             {
-               
-                UserHelper.DeleteUser(customer.UserName);
-                return RedirectToAction("Index");
+                db.CompanyCustomers.Remove(companyCustomer);
+                db.Customers.Remove(customer);
+                var response = DBHelper.SaveChanges(db);
+
+                if (response.Succeeded)
+                {
+                    trantaction.Commit();
+                    //UserHelper.DeleteUser(customer.UserName, "Customer");
+
+                    return RedirectToAction("Index");
+                }
+
+                trantaction.Rollback();
+
+                ModelState.AddModelError(string.Empty, response.Message);
+
+                return View(customer );
             }
 
-            ModelState.AddModelError(string.Empty, response.Message);
 
-            return View(customer);
+
+
 
         }
-       
+
 
         protected override void Dispose(bool disposing)
         {

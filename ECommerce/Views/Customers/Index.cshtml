@@ -16,23 +16,20 @@
         </th>
         <th>
             @Html.DisplayNameFor(model => model.UserName)
-        </th>    
-        <th>
-            @Html.DisplayNameFor(model => model.Company.Name)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Department.Name)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.City.Name)
-        </th>        
+        </th>
         <th>
             @Html.DisplayNameFor(model => model.Phone)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Address)
         </th>
-        
+
         <th></th>
     </tr>
 
@@ -43,25 +40,23 @@
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.UserName)
-        </td>       
-        <td>
-            @Html.DisplayFor(modelItem => item.Company.Name)
         </td>
+
         <td>
             @Html.DisplayFor(modelItem => item.Department.Name)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.City.Name)
-        </td>        
+        </td>
         <td>
             @Html.DisplayFor(modelItem => item.Phone)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Address)
-        </td>       
+        </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.CustomerId }, new { @class = "btn btn-info" }) 
-            @Html.ActionLink("Details", "Details", new { id=item.CustomerId }, new { @class = "btn btn-primary" }) 
+            @Html.ActionLink("Edit", "Edit", new { id=item.CustomerId }, new { @class = "btn btn-info" })
+            @Html.ActionLink("Details", "Details", new { id=item.CustomerId }, new { @class = "btn btn-primary" })
             @Html.ActionLink("Delete", "Delete", new { id=item.CustomerId }, new { @class = "btn btn-danger" })
         </td>
     </tr>

@@ -152,7 +152,7 @@ namespace ECommerce.Controllers
                         picture = $"{folder}/{user.UserId}.jpg";
 
                         user.Photo = picture;
-                 
+
                     }
                 }
 
@@ -172,7 +172,7 @@ namespace ECommerce.Controllers
                 {
                     //actualizo la db:
                     db.SaveChanges();
-                       
+
                     return RedirectToAction("Index");
                 }
                 catch (Exception)
@@ -181,7 +181,7 @@ namespace ECommerce.Controllers
                     throw;
                 }
 
-               
+
             }
             ViewBag.CityId = new SelectList(CombosHelper.GetCities(user.DepartmentId), "CityId", "Name", user.CityId);
             ViewBag.CompanyId = new SelectList(CombosHelper.GetCompanies(), "CompanyId", "Name", user.CompanyId);
@@ -219,10 +219,10 @@ namespace ECommerce.Controllers
             {
 
                 //Borro el usuario:
-                UserHelper.DeleteUser(user.UserName);
+                UserHelper.DeleteUser(user.UserName,"User");
 
                 db.SaveChanges();
-                            
+
 
                 return RedirectToAction("Index");
             }
@@ -245,7 +245,7 @@ namespace ECommerce.Controllers
             return View(user);
         }
 
-       
+
 
         protected override void Dispose(bool disposing)
         {
